@@ -1,0 +1,228 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "Collate Music Backend",
+    "version" : "1.0.0",
+    "title" : "CO-MU",
+    "contact" : {
+      "email" : "andy@nonissue.org"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host" : "virtserver.swaggerhub.com",
+  "basePath" : "/co-api/music/1.0.0",
+  "tags" : [ {
+    "name" : "songs",
+    "description" : "Song results"
+  }, {
+    "name" : "search",
+    "description" : "Search for songs on streaming music platforms"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/songs" : {
+      "get" : {
+        "tags" : [ "songs" ],
+        "summary" : "lists songs",
+        "description" : "TBD\n",
+        "operationId" : "getAllSongs",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "skip",
+          "in" : "query",
+          "description" : "number of records to skip for pagination",
+          "required" : false,
+          "type" : "integer",
+          "minimum" : 0,
+          "format" : "int32"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "maximum number of records to return",
+          "required" : false,
+          "type" : "integer",
+          "maximum" : 50,
+          "minimum" : 0,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "search results matching criteria",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Songs"
+              }
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "songs" ],
+        "summary" : "adds a song item",
+        "description" : "adds a song to m.collate.xyz",
+        "operationId" : "addSong",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "songDetails",
+          "description" : "Details of songs to add",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/SongDetails"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Song added"
+          },
+          "400" : {
+            "description" : "invalid input, object invalid"
+          },
+          "409" : {
+            "description" : "an existing item already exists"
+          }
+        }
+      }
+    },
+    "/songs/{slug}" : {
+      "get" : {
+        "tags" : [ "songs" ],
+        "summary" : "lists single song",
+        "description" : "TBD\n",
+        "operationId" : "getSong",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Song Slug",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "single song response",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          },
+          "404" : {
+            "description" : "song not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Song" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "url" : {
+          "type" : "string",
+          "example" : "http://m.collate.xyz/songs/super-rich-kids"
+        },
+        "artist" : {
+          "type" : "string",
+          "example" : "frank ocean"
+        },
+        "track" : {
+          "type" : "string",
+          "example" : "super rich kids"
+        },
+        "album" : {
+          "type" : "string",
+          "example" : "channel ORANGE"
+        },
+        "genre" : {
+          "type" : "string",
+          "example" : "r&b"
+        },
+        "links" : {
+          "$ref" : "#/definitions/Song_links"
+        }
+      }
+    },
+    "Songs" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/Song"
+      }
+    },
+    "SongDetails" : {
+      "type" : "object",
+      "required" : [ "artist" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "d290f1ee-6c54-4b01-90e6-d701748f0851"
+        },
+        "url" : {
+          "type" : "string",
+          "example" : "https://m.collate.xyz/songs/super-rich-kids"
+        },
+        "dateAdded" : {
+          "type" : "string",
+          "format" : "date-time",
+          "example" : "2016-08-29T09:12:33.001Z"
+        },
+        "artist" : {
+          "$ref" : "#/definitions/Artist"
+        }
+      }
+    },
+    "Artist" : {
+      "required" : [ "name" ],
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "example" : "Frank Ocean"
+        },
+        "entries" : {
+          "type" : "array",
+          "example" : ""
+        }
+      }
+    },
+    "Song_links_spotify" : {
+      "type" : "object",
+      "properties" : {
+        "url" : {
+          "type" : "string",
+          "format" : "url"
+        },
+        "artwork" : {
+          "type" : "string",
+          "format" : "url"
+        }
+      }
+    },
+    "Song_links" : {
+      "type" : "object",
+      "properties" : {
+        "spotify" : {
+          "$ref" : "#/definitions/Song_links_spotify"
+        },
+        "am" : {
+          "$ref" : "#/definitions/Song_links_spotify"
+        },
+        "youtube" : {
+          "$ref" : "#/definitions/Song_links_spotify"
+        }
+      }
+    }
+  }
+}
